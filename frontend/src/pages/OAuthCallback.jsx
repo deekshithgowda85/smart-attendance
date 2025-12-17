@@ -21,8 +21,12 @@ export default function OAuthCallback() {
       hashParams.get("email") || queryParams.get("email") || null;
     const role =
       hashParams.get("role") || queryParams.get("role") || null;
+    const userId =
+      hashParams.get("userId") || queryParams.get("userId") || null;
+    const name =
+      hashParams.get("name") || queryParams.get("name") || null;
 
-    console.log("OAuth callback parsed:", token ? "token present" : "no token", email, role);
+    // console.log(token,email,userId,name,role);
 
     if (!token || !role) {
         // Nothing to do — go back to login (or show error)
@@ -33,7 +37,7 @@ export default function OAuthCallback() {
    // Save as your normal login flow does
     try {
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({ email, role }));
+      localStorage.setItem("user", JSON.stringify({ email, role , name, userId}));
       // optionally set global auth header for axios/fetch here
       // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } catch (err) {

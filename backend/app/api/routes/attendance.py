@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from typing import Dict
+from typing import Dict, List
 import base64
 from bson import ObjectId
 from datetime import date
@@ -150,33 +150,38 @@ async def confirm_attendance(payload: Dict):
     today = date.today().isoformat()
     subject_oid = ObjectId(subject_id)
     present_oids = [ObjectId(sid) for sid in present_students]
+    absent_oids = [ObjectId(sid) for sid in absent_students]
     
-    # 1️⃣ Mark PRESENT students
-    await db.subjects.update_many(
+   # ✅ Mark PRESENT students
+    await db.subjects.update_one(
+        {"_id": subject_oid},
         {
-            "_id": subject_oid,
-            "students.student_id": {"$in": present_oids},
-            "students.attendance.lastMarkedAt": {"$ne": today}
+            "$inc": {"students.$[p].attendance.present": 1},
+            "$set": {"students.$[p].attendance.lastMarkedAt": today}
         },
-        {
-            "$inc": {"students.$.attendance.present": 1},
-            "$set": {"students.$.attendance.lastMarkedAt": today}
-        }
+        array_filters=[
+            {
+                "p.student_id": {"$in": present_oids},
+                "p.attendance.lastMarkedAt": {"$ne": today}
+            }
+        ]
     )
     
-    # 2️⃣ Mark ABSENT students (everyone else)
-    await db.subjects.update_many(
+   # ✅ Mark ABSENT students
+    await db.subjects.update_one(
+        {"_id": subject_oid},
         {
-            "_id": subject_oid,
-            "students.student_id": {"$nin": present_oids},
-            "students.attendance.lastMarkedAt": {"$ne": today}
+            "$inc": {"students.$[a].attendance.absent": 1},
+            "$set": {"students.$[a].attendance.lastMarkedAt": today}
         },
-        {
-            "$inc": {"students.$.attendance.absent": 1},
-            "$set": {"students.$.attendance.lastMarkedAt": today}
-        }
+        array_filters=[
+            {
+                "a.student_id": {"$in": absent_oids},
+                "a.attendance.lastMarkedAt": {"$ne": today}
+            }
+        ]
     )
-        
+
     return {
         "ok": True,
         "present_updated": len(present_students),

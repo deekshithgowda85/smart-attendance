@@ -78,7 +78,7 @@ async def upload_image_url(
         image_bytes,
         folder = "student_faces",
         public_id = str(current_user["id"]),
-        overwite=True,
+        overwrite=True,
         resource_type="image"
     )
 

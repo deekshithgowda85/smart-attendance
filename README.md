@@ -16,26 +16,6 @@
 
 ---
 
-## 🏗️ New Modular Architecture
-
-> **⚠️ IMPORTANT**: The system has been refactored into two independent services for better deployability and maintainability.
-
-```
-┌────────────────────────────────────────────────────────────┐
-│  Backend API (backend-api/)     │  ML Service (ml-face-service/) │
-│  ✅ Deployable to cloud         │  ❌ Local machine only         │
-│  ✅ No ML dependencies          │  ✅ Face recognition           │
-│  ✅ Auth, CRUD, Reports         │  ✅ OpenCV, dlib               │
-└────────────────────────────────────────────────────────────┘
-```
-
-**Quick Links:**
-- 📘 [Architecture Overview](./ARCHITECTURE.md) - **Read this first!**
-- 🔧 [Backend API Setup](./backend-api/README.md)
-- 🤖 [ML Service Setup](./ml-face-service/README.md)
-
----
-
 ## 📖 About The Project
 
 Smart Attendance is a modern, intelligent attendance management system designed for educational institutions. It leverages cutting-edge facial recognition technology to automate attendance tracking, making it faster, more accurate, and significantly easier to manage. The system provides real-time analytics, comprehensive dashboards, and intelligent reporting features for both teachers and students.
@@ -169,70 +149,22 @@ Before you begin, ensure you have the following installed on your system:
 
 ## 🚀 Installation
 
-> **💡 New Architecture**: The system now consists of two separate services. You can run just the Backend API (without face recognition) or both services for full functionality.
-
-### Quick Start
-
-#### Option 1: Backend API Only (Deployable, No Face Recognition)
+### 1. Clone the Repository
 
 ```bash
-# 1. Clone repository
 git clone https://github.com/nem-web/smart-attendance.git
 cd smart-attendance
-
-# 2. Setup Backend API
-cd backend-api
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env with your configuration
-
-# 3. Start Backend
-python -m app.main
-# Runs on http://localhost:8000
 ```
 
-#### Option 2: Full System (Backend API + ML Service)
+### Backend Setup
+
+#### Step 1: Navigate to Backend Directory
 
 ```bash
-# Terminal 1: Start ML Service
-cd ml-face-service
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt  # May take several minutes
-cp .env.example .env
-python -m app.main
-# Runs on http://localhost:8001
-
-# Terminal 2: Start Backend API
-cd backend-api
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# Add ML_SERVICE_URL=http://localhost:8001 to .env
-python -m app.main
-# Runs on http://localhost:8000
-
-# Terminal 3: Start Frontend
-cd frontend
-npm install
-npm run dev
-# Runs on http://localhost:5173
+cd backend
 ```
 
-### Detailed Setup Instructions
-
-#### Backend API Setup (Deployable)
-
-**Step 1: Navigate to Backend API Directory**
-
-```bash
-cd backend-api
-```
-
-**Step 2: Create and Activate Virtual Environment**
+#### Step 2: Create and Activate Virtual Environment
 
 **On Windows:**
 ```bash
@@ -246,16 +178,27 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-**Step 3: Install Dependencies**
+#### Step 3: Install Dependencies
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**Note**: No heavy ML dependencies - installs quickly!
+**Note**: Installing `face-recognition` may take several minutes as it compiles dlib from source. Ensure you have CMake and build tools installed.
 
-**Step 4: Setup Environment Variables**
+**For Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install build-essential cmake
+```
+
+**For macOS:**
+```bash
+brew install cmake
+```
+
+#### Step 4: Setup Environment Variables
 
 Copy the example environment file and configure it:
 
@@ -265,7 +208,7 @@ cp .env.example .env
 
 Edit `.env` file with your configuration (see [Environment Variables](#environment-variables) section).
 
-**Step 5: Start MongoDB**
+#### Step 5: Start MongoDB
 
 Ensure MongoDB is running on your system:
 
@@ -280,10 +223,10 @@ brew services start mongodb-community
 mongod --dbpath /path/to/your/data/directory
 ```
 
-**Step 6: Run the Backend API Server**
+#### Step 6: Run the Backend Server
 
 ```bash
-# From the backend-api directory
+# From the backend directory
 python -m app.main
 
 # Or using uvicorn directly
@@ -296,81 +239,17 @@ You can access the interactive API documentation at:
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
-#### ML Face Service Setup (Optional - For Face Recognition)
-
-**Step 1: Navigate to ML Service Directory**
-
-```bash
-cd ml-face-service
-```
-
-**Step 2: Create Virtual Environment**
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
-
-**Step 3: Install Dependencies**
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-**Note**: Installing `face-recognition` may take several minutes as it compiles dlib from source.
-
-**System Requirements:**
-- CMake
-- Build tools (gcc, g++, make)
-
-**For Ubuntu/Debian:**
-```bash
-sudo apt-get update
-sudo apt-get install build-essential cmake
-```
-
-**For macOS:**
-```bash
-brew install cmake
-```
-
-**Step 4: Configure ML Service**
-
-```bash
-cp .env.example .env
-# Defaults should work, edit if needed
-```
-
-**Step 5: Run ML Service**
-
-```bash
-python -m app.main
-# Runs on http://localhost:8001
-```
-
-Check health: `http://localhost:8001/api/face/health`
-
-**Step 6: Update Backend API Configuration**
-
-In `backend-api/.env`, add:
-```env
-ML_SERVICE_URL=http://localhost:8001
-```
-
-Restart the backend API server.
-
 ### Frontend Setup
 
 Open a new terminal window:
 
-**Step 1: Navigate to Frontend Directory**
+#### Step 1: Navigate to Frontend Directory
 
 ```bash
 cd frontend
 ```
 
-**Step 2: Install Dependencies**
+#### Step 2: Install Dependencies
 
 ```bash
 npm install
@@ -381,7 +260,7 @@ If you encounter any issues, try:
 npm install --legacy-peer-deps
 ```
 
-**Step 3: Start Development Server**
+#### Step 3: Start Development Server
 
 ```bash
 npm run dev
@@ -398,17 +277,14 @@ npm run preview
 
 ### Environment Variables
 
-#### Backend API (.env)
+#### Backend (.env)
 
-Create a `.env` file in the `backend-api` directory with the following variables:
+Create a `.env` file in the `backend` directory with the following variables:
 
 ```env
 # MongoDB Configuration
 MONGO_URI=mongodb://localhost:27017
 MONGO_DB=smart_attendance
-
-# ML Service (Optional - leave empty if not using face recognition)
-ML_SERVICE_URL=http://localhost:8001
 
 # JWT Configuration
 JWT_SECRET=your-secret-key-here  # Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"
@@ -441,25 +317,6 @@ TEACHER_EMAIL=teacher@gmail.com
 TEACHER_PASSWORD=teacher123
 STUDENT_EMAIL=student@gmail.com
 STUDENT_PASSWORD=student123
-```
-
-#### ML Face Service (.env)
-
-Create a `.env` file in the `ml-face-service` directory (if using face recognition):
-
-```env
-# Server Configuration
-ML_SERVICE_HOST=0.0.0.0
-ML_SERVICE_PORT=8001
-
-# Face Recognition Settings
-MIN_FACE_AREA_RATIO=0.05      # Minimum face size (5% of image)
-NUM_JITTERS=5                 # Embedding quality (higher = better but slower)
-CONFIDENCE_THRESHOLD=0.50     # Distance threshold for "present"
-UNCERTAIN_THRESHOLD=0.60      # Distance threshold for "uncertain"
-
-# Storage
-EMBEDDINGS_STORAGE_PATH=./storage/embeddings
 ```
 
 #### Important Notes:
@@ -602,9 +459,7 @@ After logging in, view:
 
 ## 🐳 Docker Deployment
 
-> **Note**: The ML Face Service is not meant for Docker/cloud deployment. Only deploy the Backend API.
-
-### Using Docker Compose (Backend API Only)
+### Using Docker Compose (Recommended)
 
 Create a `docker-compose.yml` file in the root directory:
 
@@ -622,9 +477,9 @@ services:
     environment:
       MONGO_INITDB_DATABASE: smart_attendance
 
-  backend-api:
-    build: ./backend-api
-    container_name: smart-attendance-backend-api
+  backend:
+    build: ./backend
+    container_name: smart-attendance-backend
     ports:
       - "8000:8000"
     depends_on:
@@ -632,11 +487,10 @@ services:
     environment:
       MONGO_URI: mongodb://mongodb:27017
       MONGO_DB: smart_attendance
-      ML_SERVICE_URL:  # Leave empty - no face recognition in Docker
     env_file:
-      - ./backend-api/.env
+      - ./backend/.env
     volumes:
-      - ./backend-api:/app
+      - ./backend:/app
 
   frontend:
     build: ./frontend
@@ -644,7 +498,7 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - backend-api
+      - backend
     environment:
       VITE_API_URL: http://localhost:8000
 
@@ -670,12 +524,12 @@ docker-compose down -v
 
 ### Using Individual Docker Commands
 
-#### Backend API
+#### Backend
 
 ```bash
-cd backend-api
-docker build -t smart-attendance-backend-api .
-docker run -p 8000:8000 --env-file .env smart-attendance-backend-api
+cd backend
+docker build -t smart-attendance-backend .
+docker run -p 8000:8000 --env-file .env smart-attendance-backend
 ```
 
 #### Frontend
@@ -690,70 +544,84 @@ docker run -p 5173:5173 smart-attendance-frontend
 
 ## 📁 Project Structure
 
-> **New Architecture**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed documentation.
-
 ```
 smart-attendance/
-├── backend-api/                      ✅ DEPLOYABLE Backend API
+├── backend/                          # Backend API server
 │   ├── app/
-│   │   ├── api/routes/               # REST API endpoints
-│   │   │   ├── auth.py               # Authentication
-│   │   │   ├── students.py           # Student management (calls ML service)
-│   │   │   ├── attendance.py         # Attendance (calls ML service)
-│   │   │   ├── teacher_settings.py   # Teacher preferences
-│   │   │   └── ...
-│   │   ├── services/
-│   │   │   ├── ml_service_client.py  # ⭐ NEW: ML service HTTP client
-│   │   │   ├── students.py
-│   │   │   ├── attendance.py
-│   │   │   └── ...
-│   │   ├── core/                     # Config, security
-│   │   ├── db/                       # MongoDB layer
-│   │   ├── schemas/                  # Pydantic schemas
-│   │   └── main.py
-│   ├── requirements.txt              # ✅ NO ML dependencies
-│   ├── .env.example
-│   └── README.md
+│   │   ├── api/                     # API routes
+│   │   │   ├── routes/
+│   │   │   │   ├── auth.py          # Authentication endpoints
+│   │   │   │   ├── students.py      # Student management
+│   │   │   │   ├── attendance.py    # Attendance marking
+│   │   │   │   ├── classes.py       # Class management
+│   │   │   │   ├── face.py          # Face recognition endpoints
+│   │   │   │   ├── teacher_settings.py # Teacher preferences
+│   │   │   │   └── users.py         # User management
+│   │   │   └── deps.py              # API dependencies
+│   │   ├── core/                    # Core configuration
+│   │   │   ├── config.py            # App configuration
+│   │   │   ├── security.py          # Security utilities
+│   │   │   ├── email.py             # Email service
+│   │   │   └── cloudinary_config.py # Cloud storage config
+│   │   ├── db/                      # Database layer
+│   │   │   ├── mongo.py             # MongoDB connection
+│   │   │   ├── models.py            # Database models
+│   │   │   ├── base.py              # Base repository
+│   │   │   ├── session.py           # Session management
+│   │   │   ├── subjects_repo.py     # Subject repository
+│   │   │   └── teacher_settings_repo.py
+│   │   ├── schemas/                 # Pydantic schemas
+│   │   │   ├── user.py              # User schemas
+│   │   │   ├── student.py           # Student schemas
+│   │   │   ├── teacher.py           # Teacher schemas
+│   │   │   ├── auth.py              # Authentication schemas
+│   │   │   ├── attendance.py        # Attendance schemas
+│   │   │   ├── face.py              # Face data schemas
+│   │   │   ├── timetable.py         # Timetable schemas
+│   │   │   └── teacher_settings.py  # Settings schemas
+│   │   ├── services/                # Business logic
+│   │   │   ├── face_recognition.py  # Face recognition service
+│   │   │   ├── attendance.py        # Attendance logic
+│   │   │   ├── students.py          # Student management
+│   │   │   ├── subject_service.py   # Subject management
+│   │   │   ├── email.py             # Email service
+│   │   │   └── teacher_settings_service.py
+│   │   ├── utils/                   # Utility functions
+│   │   │   ├── face_detect.py       # Face detection
+│   │   │   ├── face_encode.py       # Face encoding
+│   │   │   ├── match_utils.py       # Face matching
+│   │   │   ├── image.py             # Image processing
+│   │   │   ├── jwt_token.py         # JWT utilities
+│   │   │   ├── logging.py           # Logging configuration
+│   │   │   └── utils.py             # General utilities
+│   │   ├── static/                  # Static files
+│   │   │   └── avatars/             # User profile pictures
+│   │   └── main.py                  # Application entry point
+│   ├── tests/                       # Test suite
+│   │   ├── test_auth.py
+│   │   └── test_attendance.py
+│   ├── .env.example                 # Environment variables template
+│   ├── Dockerfile                   # Docker configuration
+│   ├── requirements.txt             # Python dependencies
+│   └── alembic.ini                  # Database migration config
 │
-├── ml-face-service/                  ❌ LOCAL ONLY ML Service
-│   ├── app/
-│   │   ├── api/routes.py             # Face recognition endpoints
-│   │   ├── utils/
-│   │   │   ├── face_detect.py        # Face detection
-│   │   │   ├── face_encode.py        # Face embeddings
-│   │   │   └── match_utils.py        # Face matching
-│   │   ├── storage/
-│   │   │   └── embeddings.py         # Local embeddings storage
-│   │   ├── core/config.py
-│   │   └── main.py
-│   ├── storage/
-│   │   └── embeddings/               # JSON files with face data
-│   ├── requirements.txt              # ✅ ML dependencies (opencv, dlib)
-│   ├── .env.example
-│   └── README.md
-│
-├── backend/                          ⚠️ DEPRECATED (old monolithic)
-│   └── ...                           # Keep for reference during migration
-│
-├── frontend/                         # Frontend React application
-│   ├── public/
+├── frontend/                        # Frontend React application
+│   ├── public/                      # Public assets
+│   │   ├── logo.png
+│   │   └── logo-bg.png
 │   ├── src/
-│   │   ├── api/                      # API client
-│   │   ├── components/               # Reusable components
-│   │   ├── pages/                    # Page components
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── MarkAttendance.jsx
+│   │   ├── api/                     # API client
+│   │   │   └── axios.js             # Axios configuration
+│   │   ├── assets/                  # Images and resources
+│   │   ├── components/              # Reusable components
+│   │   │   ├── Header.jsx           # Navigation header
 │   │   │   └── ...
-│   │   ├── students/                 # Student portal
-│   │   └── ...
-│   ├── package.json
-│   └── vite.config.js
-│
-├── .github/                          # GitHub configuration
-├── ARCHITECTURE.md                   # ⭐ Architecture documentation
-├── README.md                         # Main documentation
-├── learn.md                          # Beginner's guide
-└── diagram.drawio                    # Architecture diagram
+│   │   ├── hooks/                   # Custom React hooks
+│   │   ├── pages/                   # Page components
+│   │   │   ├── Dashboard.jsx        # Teacher dashboard
+│   │   │   ├── Login.jsx            # Login page
+│   │   │   ├── Register.jsx         # Registration page
+│   │   │   ├── MarkAttendance.jsx   # Attendance marking
 │   │   │   ├── StudentList.jsx      # Student listing
 │   │   │   ├── AddStudents.jsx      # Add students
 │   │   │   ├── Analytics.jsx        # Analytics page

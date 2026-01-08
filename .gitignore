@@ -29,41 +29,9 @@ backend/.pytest_cache/
 backend/.mypy_cache/
 backend/.ruff_cache/
 
-# Backend API
-backend-api/.venv/
-backend-api/venv/
-backend-api/__pycache__/
-backend-api/**/__pycache__/
-backend-api/**/*.pyc
-backend-api/**/*.pyo
-backend-api/**/*.pyd
-backend-api/**/*.so
-backend-api/.pytest_cache/
-backend-api/.mypy_cache/
-backend-api/.ruff_cache/
-
-# ML Face Service
-ml-face-service/.venv/
-ml-face-service/venv/
-ml-face-service/__pycache__/
-ml-face-service/**/__pycache__/
-ml-face-service/**/*.pyc
-ml-face-service/**/*.pyo
-ml-face-service/**/*.pyd
-ml-face-service/**/*.so
-ml-face-service/.pytest_cache/
-ml-face-service/.mypy_cache/
-ml-face-service/.ruff_cache/
-ml-face-service/storage/embeddings/*.json
-ml-face-service/storage/
-
 # ENV FILES (NEVER COMMIT)
 backend/.env
 backend/*.env
-backend-api/.env
-backend-api/*.env
-ml-face-service/.env
-ml-face-service/*.env
 
 # =========================
 # FASTAPI / UVICORN
@@ -72,13 +40,6 @@ backend/logs/
 backend/uploads/
 backend/faces/
 backend/images/
-
-backend-api/logs/
-backend-api/uploads/
-backend-api/faces/
-backend-api/images/
-backend-api/app/static/avatars/*.png
-backend-api/app/static/avatars/*.jpg
 
 # =========================
 # NODE / FRONTEND

@@ -34,6 +34,7 @@ export default function Header() {
             <a href="/students" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Student</a>
             <a href="/analytics" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Analytics</a>
             <a href="/reports" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Reports</a>
+            <a href="/ManageSchedule" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">ManageSchedule</a>
         </div>
         <div className="profile-section flex items-center gap-5 text-gray-500 ml-auto justify-end">
             <div className="bell bg-[var(--primary)] p-1 rounded-full">

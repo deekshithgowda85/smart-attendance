@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.config import ML_CONFIDENT_THRESHOLD, ML_UNCERTAIN_THRESHOLD
 from app.db.mongo import db
+from app.services.attendance_daily import save_daily_summary
 from app.services.ml_client import ml_client
 
 logger = logging.getLogger(__name__)
@@ -238,6 +239,26 @@ async def confirm_attendance(payload: Dict):
                 "a.attendance.lastMarkedAt": {"$ne": today}
             }
         ]
+    )
+
+    # --- Write daily attendance summary ---
+    subject = await db.subjects.find_one(
+        {"_id": subject_oid},
+        {"professor_ids": 1}
+    )
+    teacher_id = (
+        subject["professor_ids"][0]
+        if subject and subject.get("professor_ids")
+        else None
+    )
+
+    await save_daily_summary(
+        class_id=subject_oid,
+        subject_id=subject_oid,
+        teacher_id=teacher_id,
+        record_date=today,
+        present=len(present_students),
+        absent=len(absent_students),
     )
 
     return {

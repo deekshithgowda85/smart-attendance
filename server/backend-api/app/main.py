@@ -19,6 +19,7 @@ from .api.routes.attendance import router as attendance_router
 from app.api.routes import teacher_settings as settings_router
 from app.core.cloudinary_config import cloudinary
 from app.services.ml_client import ml_client
+from app.services.attendance_daily import ensure_indexes as ensure_attendance_daily_indexes
 
 logging.basicConfig(
     level=logging.INFO,
@@ -29,6 +30,8 @@ logger = logging.getLogger(APP_NAME)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await ensure_attendance_daily_indexes()
+    logger.info("attendance_daily indexes ensured")
     yield
     await ml_client.close()
     logger.info("ML client closed")

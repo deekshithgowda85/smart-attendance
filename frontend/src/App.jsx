@@ -17,6 +17,7 @@ import StudentSubjects from "./students/pages/StudentSubjects.jsx";
 import StudentForecast from "./students/pages/StudentForecast.jsx";
 import StudentProfile from "./students/pages/StudentProfile.jsx"
 import OAuthCallback from "./pages/OAuthCallback.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function RedirectToHome() {
   const storedUser = localStorage.getItem("user");
@@ -64,7 +65,7 @@ const handleThemeToggle = () => {
           <Route path="/students" element={<StudentList/>}/>
           <Route path="/analytics" element={<Analytics/>}/>
           <Route path="/reports" element={<Reports/>}/>
-          <Route path="/manage-schedule" element={<ManageSchedule />} />
+          <Route path="/manage-schedule" element={<ProtectedRoute><ManageSchedule /></ProtectedRoute>} />
           <Route path="/settings" element={<Settings/>}/>
           <Route path="/add-students" element={<AddStudents/>}/>
           <Route path="/login" element={<Login/>}/>

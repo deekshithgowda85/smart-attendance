@@ -37,24 +37,19 @@ export default function Header({ theme, setTheme}) {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[var(--bg-card)] border-b border-[var(--border-color)] shadow-sm">
-      {/* Main bar */}
-      <div className="flex items-center justify-between h-16 px-4 md:px-6">
-        {/* Left: Logo + toggle */}
-        <div className="flex items-center gap-3">
-          {/* Mobile toggle button */}
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="lg:hidden p-2 rounded-lg text-[var(--text-body)] hover:bg-[var(--bg-secondary)] transition-colors"
-            aria-label="Toggle navigation"
-          >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-
-          <Link to="/dashboard" className="flex items-center gap-3">
-            <img className="w-10 h-10 rounded-full" src="/logo.png" alt="Logo" />
-            <h1 className="text-xl font-bold text-[var(--text-main)] hidden sm:block">Smart Attendance</h1>
-          </Link>
+    <>
+    <div className="w-full h-16 flex items-center justify-start px-6 bg-[var(--bg-card)] gap-2" role="navigation">
+        <div className="logo-section flex items-center gap-4">
+            <img className="w-14 h-14 rounded-full" src="logo.png" alt="" />
+            <h1 className="text-2xl font-semibold text-[var(--text-main)]">Smart Attendance</h1>
+        </div>
+        <div className="nav-links text-gray-500 gap-1 ml-10">
+            <a href="/" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Dashboard</a>
+            <a href="/attendance" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Attendance</a>
+            <a href="/students" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Student</a>
+            <a href="/analytics" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Analytics</a>
+            <a href="/reports" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">Reports</a>
+            <a href="/manage-schedule" className="mx-2 font-semibold hover:text-[var(--primary)] hover:bg-[var(--primary-hover)] py-2 px-3 rounded-4xl">ManageSchedule</a>
         </div>
 
         {/* Center: Desktop nav links */}

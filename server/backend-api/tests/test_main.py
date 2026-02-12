@@ -9,7 +9,6 @@ sys.modules["pymongo"] = MagicMock()
 sys.modules["app.services.ml_client"] = MagicMock()
 sys.modules["app.services.attendance_daily"] = MagicMock()
 
-from fastapi.testclient import TestClient
 from app.main import app
 
 

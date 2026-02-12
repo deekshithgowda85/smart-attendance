@@ -15,7 +15,6 @@ from app.services.attendance_daily import (
     ensure_indexes as ensure_attendance_daily_indexes,
 )
 from app.services.ml_client import ml_client
-
 load_dotenv()
 
 logging.basicConfig(

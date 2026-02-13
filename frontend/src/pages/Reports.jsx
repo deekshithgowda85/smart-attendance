@@ -66,6 +66,8 @@ export default function Reports() {
 
     return {
       ...s,
+      present,
+      absent,
       total,
       percentage,
       status,
@@ -105,8 +107,8 @@ export default function Reports() {
           bValue = b.total;
           break;
         case 'attended':
-          aValue = a.attendance.present;
-          bValue = b.attendance.present;
+          aValue = a.present || 0;
+          bValue = b.present || 0;
           break;
         case 'percentage':
           aValue = a.percentage;
@@ -278,15 +280,15 @@ export default function Reports() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {sortedStudents.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={row.student_id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div>
                       <div className="font-semibold text-[var(--text-main)]">{row.name}</div>
                       <div className="text-xs text-gray-400">ID: {row.roll} • {row.branch.toUpperCase()}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.attendance.present + row.attendance.absent}</td>
-                  <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.attendance.present}</td>
+                  <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.total}</td>
+                  <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.present}</td>
                   <td className="px-6 py-4 text-sm font-bold text-[var(--text-main)]">{row.percentage}%</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(row.color)}`}>

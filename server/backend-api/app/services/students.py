@@ -19,10 +19,10 @@ async def get_student_profile(user_id: str):
     if not student:
         return None
 
-    # 3. Attendance summary
-    attendance_summary = await build_attendance_summary(student["_id"])
+    # 3. Get overall attendance summary (for backward compatibility)
+    overall_attendance_summary = await build_attendance_summary(student["_id"])
 
-    # 4. Populate subjects (ObjectId → subject objects)
+    # 4. Populate subjects with per-subject attendance
     subject_ids = student.get("subjects", [])
 
     subjects = []
@@ -30,14 +30,20 @@ async def get_student_profile(user_id: str):
         subject_cursor = subjects_col.find(
             {"_id": {"$in": subject_ids}}
         )
-        subjects = [
-            {
+        
+        async for sub in subject_cursor:
+            # Calculate attendance for THIS specific subject
+            subject_attendance = await build_attendance_summary(
+                student["_id"], 
+                sub["_id"]
+            )
+            
+            subjects.append({
                 "_id": str(sub["_id"]),
                 "name": sub.get("name"),
                 "code": sub.get("code"),
-            }
-            async for sub in subject_cursor
-        ]
+                "attendance": subject_attendance  # ✅ Per-subject stats
+            })
 
     # 5. Build clean API-safe profile
     profile = {
@@ -45,21 +51,24 @@ async def get_student_profile(user_id: str):
         "userId": str(student["userId"]),
         "name": user.get("name"),
         "email": user.get("email"),
-        "branch":student.get("branch"),
-        "roll":student.get("roll"),
+        "branch": student.get("branch"),
+        "roll": student.get("roll"),
         "year": student.get("year"),
-        "subjects": subjects,              # ✅ populated & serialized
+        "subjects": subjects,              # ✅ Now includes per-subject attendance
         "avatarUrl": student.get("avatarUrl"),
         "image_url": student.get("image_url"),
-        "attendance": attendance_summary,
-        "recent_attendance": attendance_summary["recent_attendance"],
+        "attendance": overall_attendance_summary,  # ✅ Overall stats still available
+        "recent_attendance": overall_attendance_summary["recent_attendance"],
     }
 
     return profile
 
 
-async def build_attendance_summary(student_doc_id: ObjectId):
+async def build_attendance_summary(student_doc_id: ObjectId, subject_id: ObjectId = None):
     """
+    Returns attendance stats for a student.
+    If subject_id is provided, filters by that subject.
+    
     Returns:
     {
       total_classes,
@@ -71,7 +80,12 @@ async def build_attendance_summary(student_doc_id: ObjectId):
     }
     """
 
+    # Build query - always filter by student
     q = {"student_id": student_doc_id}
+    
+    # ✅ Filter by subject if provided
+    if subject_id:
+        q["subject_id"] = subject_id
 
     total_classes = await attendance_col.count_documents(q)
     present = await attendance_col.count_documents({**q, "present": True})
@@ -80,7 +94,7 @@ async def build_attendance_summary(student_doc_id: ObjectId):
     percentage = round((present / total_classes) * 100, 2) if total_classes else 0
     forecasted_score = 2 if percentage < 50 else 5
 
-    # Last 5 attendance records
+    # Last 5 attendance records (filtered by subject if specified)
     recent_cursor = (
         attendance_col.find(q)
         .sort("date", -1)

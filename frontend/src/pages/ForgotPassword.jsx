@@ -59,6 +59,7 @@ export default function ForgotPassword() {
     }
 
     setResendLoading(true);
+    // TODO: Replace this simulated delay with real backend API integration
     await new Promise((resolve) => window.setTimeout(resolve, 800));
     setResendLoading(false);
     setResendCooldown(30);
@@ -87,6 +88,7 @@ export default function ForgotPassword() {
     }
 
     setLoading(true);
+    // TODO: Replace this simulated delay with real backend API integration
     await new Promise((resolve) => window.setTimeout(resolve, 1200));
     setLoading(false);
     setSuccess("Password reset successful. You can now log in with your new password.");
@@ -104,7 +106,7 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-[var(--bg-primary)] px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto w-full max-w-xl rounded-3xl border border-[var(--border-color)] bg-[var(--bg-card)] p-5 shadow-sm sm:p-8">
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary)]/20 text-[var(--primary)]">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-secondary)] text-[var(--primary)]">
             <Sparkles size={18} />
           </span>
           <p className="text-[22px] font-semibold text-[var(--text-main)]">Smart Attendance</p>
@@ -152,7 +154,7 @@ export default function ForgotPassword() {
                 }}
                 placeholder="Enter your registered email"
                 autoComplete="email"
-                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)]/80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)] placeholder:opacity-80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
             <p className="text-sm text-[var(--text-body)]">
@@ -195,7 +197,7 @@ export default function ForgotPassword() {
                 placeholder="Enter 6-digit OTP from your email"
                 inputMode="numeric"
                 autoComplete="one-time-code"
-                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)]/80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)] placeholder:opacity-80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
             <p className="text-sm text-[var(--text-body)]">
@@ -222,7 +224,7 @@ export default function ForgotPassword() {
                 }}
                 placeholder="Create a strong password"
                 autoComplete="new-password"
-                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)]/80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)] placeholder:opacity-80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
@@ -246,21 +248,33 @@ export default function ForgotPassword() {
                 }}
                 placeholder="Re-enter the new password"
                 autoComplete="new-password"
-                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)]/80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-3 pl-10 pr-4 text-base text-[var(--text-main)] placeholder:text-[var(--text-body)] placeholder:opacity-80 outline-none transition focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
 
           {!isSubmitDisabled && !error && (
-            <p className="text-sm text-emerald-600">
+            <p className="text-sm text-[var(--text-main)]">
               Looks good. You can now reset your password securely.
             </p>
           )}
 
-          {error && <p className="text-sm font-medium text-rose-500">{error}</p>}
+          {error && (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="text-sm font-medium text-[var(--text-main)]"
+            >
+              {error}
+            </p>
+          )}
 
           {success && (
-            <div className="flex items-start gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700">
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex items-start gap-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2.5 text-sm text-[var(--text-main)]"
+            >
               <CircleCheck size={16} className="mt-0.5 shrink-0" />
               <span>{success}</span>
             </div>

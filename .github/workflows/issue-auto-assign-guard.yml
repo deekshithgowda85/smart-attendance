@@ -40,15 +40,6 @@ jobs:
 
             // 4. Check if issue is ALREADY assigned
             if (issue.assignees.length > 0) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                body: `⚠️ @${author}
-            
-            This issue is already assigned to someone else.
-            Please check the assigned contributor or ask maintainers if it becomes free.`
-              });
               return;
             }
 

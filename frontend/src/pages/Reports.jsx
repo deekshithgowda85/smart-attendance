@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
   Download, 
   FileText, 
-  Calendar, 
   ChevronDown, 
   RotateCcw, 
-  Search,
   Filter,
   ArrowUpDown,
   ArrowUp,
@@ -24,32 +22,32 @@ export default function Reports() {
   const [startDate, setStartDate] = useState(new Date());
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
-  // const [selectedFilter, setSelectedFilter] = useState("All");
-
-  // Simulating the fetch call you had
+  // Fetch Subjects on Mount
   useEffect(() => {
     fetchMySubjects().then(setSubjects);
   }, []);
 
+  // Fetch Students when Subject/Date changes
   useEffect(() => {
     if(!selectedSubject) return;
-    // console.log("Filtering by date:", startDate); // Silence unused warning
     fetchSubjectStudents(selectedSubject).then(setStudents);
-  }, [selectedSubject, startDate])
+  }, [selectedSubject, startDate]);
 
+  // Filter Verified Students
   const verifiedStudents = students.filter(
     (s) => s.verified === true
   );
 
   const getStatusColor = (color) => {
     switch (color) {
-      case "green": return "bg-[var(--success)]/15 text-[var(--success)]";
-      case "amber": return "bg-[var(--warning)]/15 text-[var(--warning)]";
-      case "red": return "bg-[var(--danger)]/15 text-[var(--danger)]";
-      default: return "bg-[var(--bg-secondary)] text-[var(--text-body)]";
+      case "green": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+      case "amber": return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+      case "red": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+      default: return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
     }
   };
 
+  // Enhance Student Data with Stats
   const enhancedStudents = verifiedStudents.map(s => {
     const present = s.attendance?.present || 0;
     const absent = s.attendance?.absent || 0;
@@ -57,12 +55,19 @@ export default function Reports() {
     const total = present + absent;
     const percentage = total === 0 ? 0 : Math.round((present / total) * 100);
 
-    const status = percentage >= threshold ? "OK" : "At Risk";
-    const color = percentage >= threshold 
-        ? "green"
-        : percentage >= threshold - 10
-        ? "amber"
-        : "red";
+    let status = "Unknown";
+    let color = "gray";
+
+    if (percentage >= threshold) {
+        status = "Good";
+        color = "green";
+    } else if (percentage >= threshold - 10) {
+        status = "Warning";
+        color = "amber";
+    } else {
+        status = "At Risk";
+        color = "red";
+    }
 
     return {
       ...s,
@@ -75,19 +80,17 @@ export default function Reports() {
     };
   });
 
+  // Handle Sort Click
   const handleSort = (key) => {
     let direction = 'asc';
-
-    if (sortConfig.direction === 'desc'){
-      direction = null;
-      } else {
-        direction = 'asc';
-      }
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
     }
     setSortConfig({ key, direction });
   };
 
-const sortedStudents = React.useMemo(() => {
+  // Sort Logic
+  const sortedStudents = useMemo(() => {
     if (!sortConfig.key || !sortConfig.direction) {
       return enhancedStudents;
     }
@@ -101,8 +104,8 @@ const sortedStudents = React.useMemo(() => {
           bValue = b.total;
           break;
         case 'attended':
-          aValue = a.present || 0;
-          bValue = b.present || 0;
+          aValue = a.present;
+          bValue = b.present;
           break;
         case 'percentage':
           aValue = a.percentage;
@@ -120,18 +123,15 @@ const sortedStudents = React.useMemo(() => {
     });
   }, [enhancedStudents, sortConfig]);
 
-  // Get sort icon for column
+  // Get Sort Icon Helper
   const getSortIcon = (columnKey) => {
     if (sortConfig.key !== columnKey) {
-      return <ArrowUpDown size={14} className="text-gray-400" />;
+      return <ArrowUpDown size={14} className="text-[var(--text-body)] opacity-50" />;
     }
     if (sortConfig.direction === 'asc') {
-      return <ArrowUp size={14} className="text-blue-600" />;
+      return <ArrowUp size={14} className="text-[var(--primary)]" />;
     }
-    if (sortConfig.direction === 'desc') {
-      return <ArrowDown size={14} className="text-blue-600" />;
-    }
-    return <ArrowUpDown size={14} className="text-gray-400" />;
+    return <ArrowDown size={14} className="text-[var(--primary)]" />;
   };
 
 
@@ -145,11 +145,11 @@ const sortedStudents = React.useMemo(() => {
           <p className="text-[var(--text-body)]">Generate and export attendance reports for your classes</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-[var(--action-info-bg)] text-[var(--text-on-primary)] rounded-lg hover:bg-[var(--action-info-hover)] font-medium flex items-center gap-2 shadow-sm transition cursor-pointer">
+          <button className="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-main)] border border-[var(--border-color)] rounded-lg hover:bg-[var(--bg-card)] font-medium flex items-center gap-2 shadow-sm transition cursor-pointer">
             <FileText size={18} />
             Export CSV
           </button>
-          <button className="px-4 py-2 bg-[var(--action-info-bg)] text-[var(--text-on-primary)] rounded-lg hover:bg-[var(--action-info-hover)] font-medium flex items-center gap-2 shadow-sm transition cursor-pointer">
+          <button className="px-4 py-2 bg-[var(--primary)] text-[var(--text-on-primary)] rounded-lg hover:opacity-90 font-medium flex items-center gap-2 shadow-sm transition cursor-pointer">
             <Download size={18} />
             Export PDF
           </button>
@@ -182,7 +182,7 @@ const sortedStudents = React.useMemo(() => {
               <select
                 value={selectedSubject || ""}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="w-full pl-3 pr-10 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] outline-none cursor-pointer"
+                className="w-full pl-3 pr-10 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] outline-none cursor-pointer text-[var(--text-main)]"
               >
                 <option disabled value="">Select subject</option>
                 {subjects.map(s => (
@@ -212,7 +212,7 @@ const sortedStudents = React.useMemo(() => {
                   min="0"
                   max="100"
                   value={threshold}
-                  onChange={(e) => setThreshold(e.target.value)}
+                  onChange={(e) => setThreshold(Number(e.target.value))}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
               </div>
@@ -234,16 +234,18 @@ const sortedStudents = React.useMemo(() => {
             <h3 className="font-bold text-[var(--text-main)]">Report preview</h3>
             <p className="text-sm text-[var(--text-body)]">Summary of student attendance for the selected filters</p>
           </div>
-          <button className="text-sm font-medium text-[var(--text-body)] hover:text-[var(--primary)] cursor-pointer">View full report</button>
+          <button className="text-sm font-medium text-[var(--primary)] hover:underline cursor-pointer">View full report</button>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px]">
-            <thead className="bg-[var(--bg-card)]">
-              <tr className="text-left text-xs font-medium text-[var(--text-body)] opacity-70 uppercase tracking-wider border-b border-[var(--border-color)]">
+            <thead className="bg-[var(--bg-secondary)]">
+              <tr className="text-left text-xs font-semibold text-[var(--text-body)] uppercase tracking-wider border-b border-[var(--border-color)]">
                 <th className="px-6 py-4">Student</th>
+                
+                {/* Sortable Header: Total Classes */}
                 <th 
-                  className="px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors select-none"
+                  className="px-6 py-4 cursor-pointer hover:bg-[var(--bg-card)] transition-colors select-none"
                   onClick={() => handleSort('total')}
                 >
                   <div className="flex items-center gap-2">
@@ -251,8 +253,10 @@ const sortedStudents = React.useMemo(() => {
                     {getSortIcon('total')}
                   </div>
                 </th>
+
+                {/* Sortable Header: Attended */}
                 <th 
-                  className="px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors select-none"
+                  className="px-6 py-4 cursor-pointer hover:bg-[var(--bg-card)] transition-colors select-none"
                   onClick={() => handleSort('attended')}
                 >
                   <div className="flex items-center gap-2">
@@ -260,8 +264,10 @@ const sortedStudents = React.useMemo(() => {
                     {getSortIcon('attended')}
                   </div>
                 </th>
+
+                {/* Sortable Header: Percentage */}
                 <th 
-                  className="px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors select-none"
+                  className="px-6 py-4 cursor-pointer hover:bg-[var(--bg-card)] transition-colors select-none"
                   onClick={() => handleSort('percentage')}
                 >
                   <div className="flex items-center gap-2">
@@ -273,56 +279,66 @@ const sortedStudents = React.useMemo(() => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-color)]">
-              {sortedStudents.map((row) => (
-                <tr key={row.student_id} className="hover:bg-[var(--bg-secondary)] transition-colors">
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className="font-semibold text-[var(--text-main)]">{row.name}</div>
-                      <div className="text-xs text-[var(--text-body)] opacity-70">ID: {row.roll} • {row.branch.toUpperCase()}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.total}</td>
-                  <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.present}</td>
-                  <td className="px-6 py-4 text-sm font-bold text-[var(--text-main)]">{row.percentage}%</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(row.color)}`}>
-                      {row.status}
-                    </span>
-                  </td>
+              {sortedStudents.length > 0 ? (
+                sortedStudents.map((row) => (
+                  <tr key={row._id} className="hover:bg-[var(--bg-secondary)] transition-colors">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-semibold text-[var(--text-main)]">{row.name}</div>
+                        <div className="text-xs text-[var(--text-body)] opacity-70">ID: {row.roll_number}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.total}</td>
+                    <td className="px-6 py-4 text-sm text-[var(--text-body)]">{row.present}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-[var(--text-main)]">{row.percentage}%</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(row.color)}`}>
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                    <td colSpan="5" className="px-6 py-8 text-center text-[var(--text-body)] opacity-70">
+                        {selectedSubject ? "No verified students found for this subject." : "Please select a subject to view reports."}
+                    </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Footer */}
-        <div className="bg-[var(--bg-secondary)] p-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[var(--text-body)] opacity-80">
-          <span>
-            Showing {sortedStudents.length} of {verifiedStudents.length} students
-            {sortConfig.key && sortConfig.direction && (
-              <> • Sorted by {
-                sortConfig.key === 'total' ? 'Total Classes' :
-                sortConfig.key === 'attended' ? 'Attended' :
-                'Attendance %'
-              } ({sortConfig.direction === 'asc' ? 'Low to High' : 'High to Low'})</>
-            )}
-          </span>
+        {sortedStudents.length > 0 && (
+            <div className="bg-[var(--bg-secondary)] p-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[var(--text-body)] border-t border-[var(--border-color)]">
+            <span>
+                Showing {sortedStudents.length} students
+                {sortConfig.key && (
+                <> • Sorted by {
+                    sortConfig.key === 'total' ? 'Total Classes' :
+                    sortConfig.key === 'attended' ? 'Attended' :
+                    'Attendance %'
+                } ({sortConfig.direction === 'asc' ? 'Low to High' : 'High to Low'})</>
+                )}
+            </span>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[var(--success)]"></span>
-              <span>≥ 85%</span>
+            <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Good (≥ {threshold}%)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Warning</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                <span>At Risk</span>
+                </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[var(--warning)]"></span>
-              <span>75-84%</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[var(--danger)]"></span>
-              <span>{"< 75%"}</span>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
     </div>

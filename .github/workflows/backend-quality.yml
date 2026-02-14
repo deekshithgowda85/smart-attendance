@@ -9,12 +9,14 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: server/backend-api
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,12 +28,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff bandit
 
+      # ---------------- FORMAT FIRST ----------------
+      - name: Auto-format with Ruff
+        run: |
+          ruff format .
+
+      # ---------------- LINT AFTER FORMAT ----------------
       - name: Lint with Ruff
-        run: ruff check .
+        run: |
+          ruff check .
 
-      - name: Check formatting with Ruff
-        run: ruff format --check .
+      # ---------------- VERIFY FORMATTING ----------------
+      - name: Verify formatting (must be clean)
+        run: |
+          ruff format --check .
 
+      # ---------------- SECURITY SCAN ----------------
       - name: Security scan with Bandit
         run: |
           bandit -r . --skip B101 --exclude ./tests,./seed_db.py

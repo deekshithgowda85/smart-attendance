@@ -10,6 +10,9 @@ opencv-python-headless
 numpy==1.26.4
 pillow==11.0.0
 scikit-learn
+
+pytest
+pytest-cov
 structlog>=23.0.0
 python-json-logger>=2.0.0
 sentry-sdk[fastapi]>=1.40.0
@@ -21,3 +24,4 @@ psutil>=5.9.0
 pytest
 httpx
 pytest-cov
+httpx

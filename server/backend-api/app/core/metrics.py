@@ -1,4 +1,4 @@
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Gauge
 
 # Business Logic Metrics
 ATTENDANCE_MARKED = Counter(

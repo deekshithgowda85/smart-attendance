@@ -1,7 +1,6 @@
 import structlog
 import logging
 import sys
-from pythonjsonlogger import jsonlogger
 
 def setup_logging():
     # Configure standard logging to use JSON formatter

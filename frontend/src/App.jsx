@@ -45,7 +45,8 @@ const hideNavbarRoutes = [
   "/student-forecast",
   "/student-profile",
   "/login",
-  "/register"
+  "/register",
+  "/forgot-password",
 ];
 
 /**

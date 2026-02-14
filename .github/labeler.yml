@@ -1,33 +1,22 @@
-# Add 'frontend' label to any changes within 'frontend' folder or any .js/.jsx/.ts/.tsx/.css files
 frontend:
   - changed-files:
-      - any-glob-to-any-file: 
-          - 'frontend/**/*'
-          - '**/*.js'
-          - '**/*.jsx'
-          - '**/*.ts'
-          - '**/*.tsx'
-          - '**/*.css'
+      - any-glob-to-any-file:
+          - frontend/**
+          - frontend/**/*
 
-# Add 'backend' label to changes in 'server' folder or python files
 backend:
   - changed-files:
       - any-glob-to-any-file:
-          - 'server/**/*'
-          - '**/*.py'
+          - server/backend-api/**
+          - server/backend-api/**/*
 
-# Add 'documentation' label to changes in markdown files
-documentation:
+ml:
+  - changed-files:
+      - any-glob-to-any-file:
+          - server/ml-service/**
+          - server/ml-service/**/*
+
+docs:
   - changed-files:
       - any-glob-to-any-file:
           - '**/*.md'
-          - 'docs/**/*'
-
-# Add 'devops' label for docker/ci files
-devops:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'Dockerfile'
-          - 'docker-compose*.yml'
-          - '.github/workflows/**/*'
-          - 'Makefile'

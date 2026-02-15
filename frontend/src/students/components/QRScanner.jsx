@@ -69,6 +69,7 @@ export default function QRScanner({ onScanSuccess, onScanError, onClose }) {
           <button 
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            aria-label="Close scanner"
           >
             <XCircle size={24} />
           </button>

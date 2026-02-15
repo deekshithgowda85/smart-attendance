@@ -47,7 +47,7 @@ prometheus-client>=0.20.0
 prometheus-fastapi-instrumentator>=6.1.0
 psutil>=5.9.8
 geopy>=2.4.1
-redis[hiredis]
+redis[hiredis]>=5.0.0
 
 # =========================
 # Testing (safe in prod)

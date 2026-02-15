@@ -1,6 +1,7 @@
 import os
 import pytest
 import pytest_asyncio
+from datetime import datetime, timedelta, timezone
 from httpx import AsyncClient, ASGITransport
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -102,3 +103,38 @@ async def auth_token(client, db, test_user_data):
     }
     response = await client.post("/auth/login", json=login_data)
     return response.json()["token"]
+
+
+@pytest.fixture
+def make_token_header():
+    """
+    Factory fixture to create JWT token headers for any role, with exp claim.
+    """
+    from jose import jwt
+    from app.core.config import settings
+
+    def _create_header(user_id: str, role: str, email: str = None):
+        email = email or f"{role}@test.com"
+        exp = datetime.now(timezone.utc) + timedelta(days=30)
+        token_payload = {
+            "sub": user_id,
+            "role": role,
+            "email": email,
+            "exp": int(exp.timestamp()),
+        }
+        token = jwt.encode(
+            token_payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
+        )
+        return {"Authorization": f"Bearer {token}"}
+
+    return _create_header
+
+
+@pytest.fixture
+def teacher_token_header(make_token_header):
+    return lambda tid: make_token_header(tid, "teacher")
+
+
+@pytest.fixture
+def student_token_header(make_token_header):
+    return lambda sid: make_token_header(sid, "student")

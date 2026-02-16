@@ -130,8 +130,8 @@ export default function ForgotPassword() {
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-       // Specifically handle OTP errors here
-       setError(err.response?.data?.detail || t('common.error'));
+      // Specifically handle OTP errors here
+      setError(err.response?.data?.detail || t('common.error'));
     } finally {
       setLoading(false);
     }

@@ -102,6 +102,8 @@ async def get_monthly_summary(
     # New logic: Unwind 'daily' map -> group by month
     pipeline = [
         {"$match": match_filter},
+        # Ensure only documents with 'daily' field are processed
+        {"$match": {"daily": {"$exists": True}}},
         # Convert daily map to array of k,v
         {"$project": {"classId": "$subjectId", "dailyArray": {"$objectToArray": "$daily"}}},
         {"$unwind": "$dailyArray"},

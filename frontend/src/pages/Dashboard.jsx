@@ -203,7 +203,7 @@ export default function Dashboard() {
               <Download size={18} />
               {t('dashboard.download_report')}
             </button>
-            <Link to="/start-attendance" className="hover:bg-[var(--primary-hover)] px-4 py-2 bg-[var(--primary)] text-[var(--text-on-primary)] rounded-lg hover:bg-[var(--primary-hover)] font-medium shadow-sm flex items-center gap-2 transition-colors">
+            <Link to="/attendance" className="hover:bg-[var(--primary-hover)] px-4 py-2 bg-[var(--primary)] text-[var(--text-on-primary)] rounded-lg hover:bg-[var(--primary-hover)] font-medium shadow-sm flex items-center gap-2 transition-colors">
               <Play size={18} fill="currentColor" />
               {t('dashboard.startAttendance')}
             </Link>

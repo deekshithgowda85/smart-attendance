@@ -82,6 +82,7 @@
       "after_attending": "After attending",
       "needed_for_75": "Classes needed for 75%",
       "more_classes": "{{count}} more",
+      "more_classes_overflow": "{{count}}+",
       "eligible": "Eligible for finals",
       "not_eligible": "Not yet eligible",
       "eligible_desc": "You will be safely above the 75% rule.",

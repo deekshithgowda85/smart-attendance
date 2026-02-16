@@ -36,7 +36,7 @@ export default function StudentForecast() {
   const TARGET = 0.75;
 
   const classesNeeded = (() => {
-    if (totalClassesSoFar <= 0) return 0;
+    if (totalClassesSoFar <= 0) return 1;
 
     // minimum x such that (presentSoFar + x)/(totalClassesSoFar + x) >= 0.75
     const safePresent = Math.min(presentSoFar, totalClassesSoFar);
@@ -203,8 +203,8 @@ export default function StudentForecast() {
                   <div className="col-span-2 pt-2 border-t border-gray-50 flex justify-between items-center">
                     <p className="text-gray-500 text-xs">{t('forecast.simulation.needed_for_75')}</p>
                     <p className="font-bold text-slate-800">{canReachWithinSlider
-                      ? t('forecast.simulation.more_classes', { count: classesNeeded })
-                      : `${classesNeeded}+`}
+                       ? t('forecast.simulation.more_classes', { count: classesNeeded })
+                       : t('forecast.simulation.more_classes_overflow', { count: classesNeeded })}
                     </p>
                   </div>
                 </div>

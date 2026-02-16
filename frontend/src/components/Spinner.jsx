@@ -1,5 +1,6 @@
 // components/Spinner.jsx
 import React from "react";
+import PropTypes from "prop-types";
 import { Loader2 } from "lucide-react";
 
 export default function Spinner({ message = "Loading..." }) {
@@ -12,3 +13,7 @@ export default function Spinner({ message = "Loading..." }) {
     </div>
   );
 }
+
+Spinner.propTypes = {
+  message: PropTypes.string,
+};

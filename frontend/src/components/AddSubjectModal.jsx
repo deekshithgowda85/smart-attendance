@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { X, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -79,3 +80,9 @@ export default function AddSubjectModal({ open, onClose, onSave }) {
     </div>
   );
 }
+
+AddSubjectModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+};

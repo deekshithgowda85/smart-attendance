@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import AddSubjectModal from '../AddSubjectModal';
@@ -14,6 +15,10 @@ const queryClient = new QueryClient();
 const Wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
+
+Wrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 describe('AddSubjectModal Component', () => {
     it('does not render when open is false', () => {

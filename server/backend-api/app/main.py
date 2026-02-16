@@ -12,11 +12,12 @@ from app.api.routes import teacher_settings as settings_router
 from .api.routes.schedule import router as schedule_router
 from .api.routes.attendance import router as attendance_router
 from .api.routes.auth import router as auth_router
-from .api.routes.students import router as students_router
-from .api.routes.notifications import router as notifications_router
-from .core.config import APP_NAME, ORIGINS
 from .api.routes.analytics import router as analytics_router
+from .api.routes.notifications import router as notifications_router
 from .api.routes.reports import router as reports_router
+from .api.routes.students import router as students_router
+from .api.routes.health import router as health_router
+from .core.config import APP_NAME, ORIGINS
 from app.services.attendance_daily import (
     ensure_indexes as ensure_attendance_daily_indexes,
 )
@@ -35,7 +36,6 @@ from .middleware.correlation import CorrelationIdMiddleware
 from .middleware.timing import TimingMiddleware
 from .middleware.security import SecurityHeadersMiddleware
 
-from .api.routes.health import router as health_router
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.core.limiter import limiter
@@ -54,7 +54,6 @@ if SENTRY_DSN := os.getenv("SENTRY_DSN"):
         integrations=[FastApiIntegration()],
     )
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
@@ -62,7 +61,7 @@ async def lifespan(app: FastAPI):
         logger.info("attendance_daily indexes ensured")
     except Exception as e:
         logger.warning(
-            f"Could not connect to MongoDB. Application will continue, but DB features will fail. Error: {e}"  # noqa: E501
+            f"Could not connect to MongoDB. Application will continue, but DB features will fail. Error: {e}" # noqa: E501
         )
         logger.warning("Please check your MONGO_URI in .env")
 
@@ -70,7 +69,6 @@ async def lifespan(app: FastAPI):
     await ml_client.close()
     logger.info("ML client closed")
     await close_redis()
-
 
 def create_app() -> FastAPI:
     app = FastAPI(title=APP_NAME, lifespan=lifespan)
@@ -94,7 +92,7 @@ def create_app() -> FastAPI:
     app.add_middleware(CorrelationIdMiddleware)
     app.add_middleware(TimingMiddleware)
 
-    # SessionMiddleware MUST be added before routers so authlib can use request.session reliably  # noqa: E501
+    # SessionMiddleware MUST be added before routers so authlib can use request.session reliably # noqa: E501
     app.add_middleware(
         SessionMiddleware,
         secret_key=os.getenv("SESSION_SECRET_KEY", "temporary-dev-secret-key"),
@@ -123,14 +121,13 @@ def create_app() -> FastAPI:
 
     return app
 
-
 app = create_app()
 
 # Instrumentator
 Instrumentator().instrument(app).expose(app)
 
-# Optional: run directly with `python -m app.main`
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)  # nosec
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True) # nosec

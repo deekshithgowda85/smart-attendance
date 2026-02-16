@@ -7,12 +7,17 @@ import {
   Filter,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Loader2
 } from "lucide-react";
 import { fetchMySubjects, fetchSubjectStudents, exportAttendanceCSV } from "../api/teacher";
 import DateRange from '../components/DateRange.jsx';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useTranslation } from "react-i18next";
+import { toast } from "react-hot-toast";
+
+// Named constant for the default export date range (in days)
+const REPORT_DATE_RANGE_DAYS = 30;
 
 
 export default function Reports() {
@@ -23,6 +28,7 @@ export default function Reports() {
   const [students, setStudents] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [loadingFormat, setLoadingFormat] = useState(null); // "pdf" | "csv" | null
 
   // Fetch Subjects on Mount
   useEffect(() => {
@@ -136,6 +142,73 @@ export default function Reports() {
     return <ArrowDown size={14} className="text-[var(--primary)]" />;
   };
 
+  // Shared Export Handler (eliminates duplication between PDF & CSV)
+  const handleExport = async (format) => {
+    if (!selectedSubject) {
+      toast.error(t('reports.errors.select_subject') || "Please select a subject first");
+      return;
+    }
+
+    setLoadingFormat(format);
+    try {
+      const token = localStorage.getItem("token");
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + REPORT_DATE_RANGE_DAYS);
+
+      const params = new URLSearchParams({
+        subject_id: selectedSubject,
+        start_date: startDate.toISOString().split('T')[0],
+        end_date: endDate.toISOString().split('T')[0],
+      });
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/reports/export/${format}?${params}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate ${format.toUpperCase()}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const contentDisposition = response.headers.get("Content-Disposition");
+      let filename = `attendance_report.${format}`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match) filename = match[1];
+      }
+
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success(
+        t(`reports.success.${format}_exported`) ||
+          `${format.toUpperCase()} downloaded successfully!`
+      );
+    } catch (error) {
+      console.error(`Error exporting ${format}:`, error);
+      toast.error(
+        t(`reports.errors.${format}_failed`) ||
+          `Failed to export ${format.toUpperCase()}.`
+      );
+    } finally {
+      setLoadingFormat(null);
+    }
+  };
+
+  const handleExportPDF = () => handleExport("pdf");
+  const handleExportCSV = () => handleExport("csv");
+
 
   // Handle CSV Export
   const handleExportCSV = async () => {
@@ -181,8 +254,35 @@ export default function Reports() {
     <div className="min-h-screen bg-[var(--bg-primary)] p-6 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
 
-        {/* --- HEADER --- */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* --- HEADER --- */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--text-main)]">{t('reports.title')}</h2>
+          <p className="text-[var(--text-body)]">{t('reports.subtitle')}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleExportCSV}
+            disabled={loadingFormat !== null || !selectedSubject}
+            className="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-main)] border border-[var(--border-color)] rounded-lg hover:bg-[var(--bg-card)] font-medium flex items-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loadingFormat === "csv" ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
+            {t('reports.export_csv')}
+          </button>
+          <button 
+            onClick={handleExportPDF}
+            disabled={loadingFormat !== null || !selectedSubject}
+            className="px-4 py-2 bg-[var(--primary)] text-[var(--text-on-primary)] rounded-lg hover:opacity-90 font-medium flex items-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loadingFormat === "pdf" ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
+             {t('reports.export_pdf')}
+          </button>
+        </div>
+      </div>
+
+      {/* --- FILTERS CARD --- */}
+      <div className="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-color)] shadow-sm">
+        <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-2xl font-bold text-[var(--text-main)]">{t('reports.title')}</h2>
             <p className="text-[var(--text-body)]">{t('reports.subtitle')}</p>

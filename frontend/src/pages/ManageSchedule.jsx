@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   Plus,
   Calendar as CalendarIcon,
-  RefreshCw,
+  CalendarDays,
   Folder,
   ChevronDown,
   MoreHorizontal,
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { getSettings, updateSettings } from "../api/schedule";
 import Spinner from "../components/Spinner";
+import HolidaysModal from "../components/HolidaysModal";
 
 export default function ManageSchedule() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ export default function ManageSchedule() {
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [holidaysModalOpen, setHolidaysModalOpen] = useState(false);
   const yearScrollRef = useRef(null);
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -165,13 +167,14 @@ export default function ManageSchedule() {
         },
       });
     });
+    // Holidays are now in a dedicated collection (per issue #315),
+    // so we no longer include them in the schedule payload.
     return {
       timetable: Object.keys(grouped).map((day) => ({
         day,
         periods: grouped[day],
       })),
       recurring: scheduleEnvelope.recurring ?? null,
-      holidays: scheduleEnvelope.holidays ?? [],
       exams: scheduleEnvelope.exams ?? [],
       meta: scheduleEnvelope.meta ?? {},
     };
@@ -689,18 +692,27 @@ export default function ManageSchedule() {
               </div>
             </div>
 
-            {/* Recurring Timetable */}
-            <div className="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-color)] flex items-center justify-between cursor-pointer hover:bg-[var(--bg-secondary)] transition">
+            {/* Holidays (replaced Recurring Timetable) */}
+            <div
+              onClick={() => setHolidaysModalOpen(true)}
+              className="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-color)] flex items-center justify-between cursor-pointer hover:bg-[var(--bg-secondary)] transition"
+            >
               <div>
                 <h4 className="font-bold text-[var(--text-main)] text-sm">
-                  {t('manage_schedule.recurring_timetable', "Recurring timetable")}
+                  {t('manage_schedule.holidays_title', "Holidays")}
                 </h4>
                   <p className="text-xs text-[var(--text-body)] mt-0.5">
-                    {t('manage_schedule.recurring_desc', "Mon-Fri use default weekly pattern")}
+                    {t('manage_schedule.holidays_desc', "Manage non-instructional days")}
                   </p>
                 </div>
-                <RefreshCw size={18} className="text-[var(--text-body)]" />
+                <CalendarDays size={18} className="text-[var(--text-body)]" />
               </div>
+
+              {/* Holidays Modal — fully self-contained, persists directly to holidays collection */}
+              <HolidaysModal
+                isOpen={holidaysModalOpen}
+                onClose={() => setHolidaysModalOpen(false)}
+              />
 
               {/* Exam Days */}
               <div className="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-color)] flex items-center justify-between cursor-pointer hover:bg-[var(--bg-secondary)] transition">

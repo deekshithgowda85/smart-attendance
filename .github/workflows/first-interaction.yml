@@ -8,9 +8,14 @@ jobs:
   thank-you:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    
+    # 👇 ADD THIS PERMISSIONS BLOCK
     permissions:
+      issues: write
       pull-requests: write
       contents: read
+    # 👆 END OF ADDITION
+
     steps:
       - name: Check for previous contributions
         id: check_contrib
@@ -19,14 +24,9 @@ jobs:
           script: |
             const creator = context.payload.pull_request.user.login;
             const { owner, repo } = context.repo;
-            
-            // Search for merged PRs by this user in this repo
             const { data: items } = await github.rest.search.issuesAndPullRequests({
               q: `is:pr is:merged author:${creator} repo:${owner}/${repo}`
             });
-            
-            // items.total_count includes the CURRENT PR which just merged.
-            // So if count is 1, this is their very first merged PR.
             console.log(`Merged PR count for ${creator}: ${items.total_count}`);
             return items.total_count;
 

@@ -596,15 +596,26 @@ async def google_callback(request: Request):
     )
 
     # Store hashed session ID in database (invalidates previous sessions)
-    await db.users.update_one(
-        {"_id": user["_id"]},
-        {
-            "$set": {
-                "current_active_session": hash_session_id(session_id),
-                "session_created_at": datetime.now(UTC),
-            }
-        },
-    )
+    try:
+        await db.users.update_one(
+            {"_id": user["_id"]},
+            {
+                "$set": {
+                    "current_active_session": hash_session_id(session_id),
+                    "session_created_at": datetime.now(UTC),
+                }
+            },
+        )
+    except Exception as exc:
+        logger.error(
+            "Failed to update session for OAuth user %s: %s",
+            email,
+            exc,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Could not create session, please try again.",
+        )
 
     logger.info(f"New session created for OAuth user: {email}")
 

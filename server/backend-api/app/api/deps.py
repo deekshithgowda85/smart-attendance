@@ -53,6 +53,7 @@ async def get_current_teacher(
     # Validate session if session_id is present in token
     session_id = payload.get("session_id")
     if session_id:
+        # Import locally to avoid circular import issues
         from app.utils.jwt_token import hash_session_id
 
         stored_session_hash = user.get("current_active_session")

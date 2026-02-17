@@ -40,6 +40,9 @@ export default function OAuthCallback() {
     try {
       // Clear all existing session data before storing new session
       // This ensures no residual data from previous accounts remains
+      // This is required for Scenario B (acceptance criteria):
+      // When User A logs in, then User B logs in on same browser,
+      // User A's data must be completely cleared
       localStorage.clear();
 
       localStorage.setItem("token", token);

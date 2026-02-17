@@ -20,6 +20,19 @@ jobs:
             const author = context.payload.comment.user.login;
             const issue = context.payload.issue;
 
+            // =================================================================
+            // 0. EXCLUSION LIST (Admin & Maintainers)
+            // These users will NEVER be auto-assigned by comments.
+            // They must be assigned manually via the sidebar.
+            // =================================================================
+            const maintainers = ["nem-web", "adi271001", "Suvam-paul145"]; 
+
+            if (maintainers.includes(author)) {
+              console.log(`User @${author} is a maintainer. Auto-assignment skipped.`);
+              return; 
+            }
+            // =================================================================
+
             // 1. Ignore Bots and PR comments
             if (context.payload.comment.user.type === "Bot" || issue.pull_request) {
               return;

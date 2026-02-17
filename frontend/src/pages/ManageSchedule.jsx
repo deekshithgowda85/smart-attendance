@@ -559,7 +559,7 @@ export default function ManageSchedule() {
                       · {cls.teacher}
                     </p>
                     <span
-                      className={`text-[var(--text-on-primary)] text-[10px] font-bold px-2 py-0.5 rounded ${cls.status === "Active" ? "bg-[var(--success)]" : "bg-[var(--warning)]"}`}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded ${cls.status === "Active" ? "bg-[var(--success)] text-[var(--text-on-primary)]" : "bg-[var(--warning)] text-[var(--text-on-primary)]"}`}
                     >
                       {cls.status}
                     </span>
@@ -735,7 +735,7 @@ export default function ManageSchedule() {
 
           {/* Templates Modal */}
           {showTemplates && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4">
               <div className="bg-[var(--bg-card)] w-full max-w-lg rounded-2xl p-6 shadow-xl border border-[var(--border-color)]">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-bold text-lg text-[var(--text-main)]">

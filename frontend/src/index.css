@@ -72,8 +72,9 @@
     /* Action colors */
   --success: #22c55e;       /* green-500 */
   --warning: #f59e0b;       /* amber-500 */
-  --action-info-bg: #3b82f6;   /* blue-500 */
-  --action-info-hover: #2563eb;
+  --action-info-bg: #2563eb;      /* reuse existing hover (darker) */
+  --action-info-hover: #3b82f6;   /* optional: keep hover lighter */
+
 
   --overlay: rgba(0, 0, 0, 0.6);
 
@@ -107,8 +108,9 @@
     /* Action colors */
   --success: #16a34a;       /* green-600 */
   --warning: #d97706;       /* amber-600 */
-  --action-info-bg: #059669;   /* emerald-600 */
-  --action-info-hover: #047857;
+  --action-info-bg: #059669;     /* base action info background (lighter) */
+  --action-info-hover: #047857;  /* darker hover state for action info */
+
 
   --overlay: rgba(20, 83, 45, 0.4);
 

@@ -386,9 +386,6 @@ async def get_global_stats(
         if attendance_pct < 75:
             risk_count += 1
 
-        if attendance_pct < 75:
-            risk_count += 1
-
     
     # Re-sort by attendancePercentage descending
     subject_stats.sort(key=lambda x: x["attendancePercentage"], reverse=True)

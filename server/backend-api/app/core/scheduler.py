@@ -12,7 +12,8 @@ def start_scheduler():
     # Run on the 1st of every month at 00:00
     # trigger = CronTrigger(day=1, hour=0, minute=0)
     
-    # NOTE: For testing/demo purposes, we might want to run it more frequently or manually trigger it.
+    # NOTE: For testing/demo purposes, we might want to run it more
+    # frequently or manually trigger it.
     # But per requirements: "1st of every month"
     
     # We add the job but PAUSE IT by default or comment it out in main.py as requested.

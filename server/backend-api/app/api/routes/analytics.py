@@ -213,7 +213,12 @@ async def get_monthly_summary(
         # Ensure only documents with 'daily' field are processed
         {"$match": {"daily": {"$exists": True}}},
         # Convert daily map to array of k,v
-        {"$project": {"classId": "$subjectId", "dailyArray": {"$objectToArray": "$daily"}}},
+        {
+            "$project": {
+                "classId": "$subjectId", 
+                "dailyArray": {"$objectToArray": "$daily"}
+            }
+        },
         {"$unwind": "$dailyArray"},
         {
             "$addFields": {
@@ -295,7 +300,12 @@ async def get_class_risk():
     # Aggregate to get overall percentage per class
     pipeline = [
          # Convert daily map to array
-        {"$project": {"classId": "$subjectId", "dailyArray": {"$objectToArray": "$daily"}}},
+        {
+            "$project": {
+                "classId": "$subjectId", 
+                "dailyArray": {"$objectToArray": "$daily"}
+            }
+        },
         {"$unwind": "$dailyArray"},
         {
             "$addFields": {
@@ -421,7 +431,12 @@ async def get_global_stats(
     pipeline = [
         {"$match": {"subjectId": {"$in": subject_ids}}},
          # Convert daily map to array
-        {"$project": {"classId": "$subjectId", "dailyArray": {"$objectToArray": "$daily"}}},
+        {
+            "$project": {
+                "classId": "$subjectId", 
+                "dailyArray": {"$objectToArray": "$daily"}
+            }
+        },
         {"$unwind": "$dailyArray"},
         {
             "$addFields": {

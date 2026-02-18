@@ -8,12 +8,12 @@ decoupled from the teacher document.
 
 from pydantic import BaseModel, Field
 from typing import List
-from datetime import date
+import datetime
 
 
 class HolidayCreate(BaseModel):
     """Schema for creating a new holiday."""
-    date: date = Field(..., description="The date of the holiday (YYYY-MM-DD)")
+    date: datetime.date = Field(..., description="The date of the holiday (YYYY-MM-DD)")
     name: str = Field(
         ...,
         min_length=1,
@@ -25,7 +25,7 @@ class HolidayCreate(BaseModel):
 class HolidayResponse(BaseModel):
     """Schema for a holiday returned from the API."""
     id: str = Field(..., description="Unique identifier for the holiday")
-    date: date = Field(..., description="The date of the holiday (YYYY-MM-DD)")
+    date: datetime.date = Field(..., description="The date of the holiday (YYYY-MM-DD)")
     name: str = Field(..., description="Name of the holiday")
 
 

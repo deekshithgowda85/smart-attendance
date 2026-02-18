@@ -10,7 +10,7 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 from app.api.routes import teacher_settings as settings_router
 from .api.routes.schedule import router as schedule_router
-from .api.routes.holidays import router as holidays_router          # ← NEW
+from .api.routes.holidays import router as holidays_router
 from .api.routes.attendance import router as attendance_router
 from .api.routes.auth import router as auth_router
 from .api.routes.analytics import router as analytics_router

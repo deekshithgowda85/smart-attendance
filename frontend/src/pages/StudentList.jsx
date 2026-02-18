@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { 
-  Search, 
-  Filter, 
+  Search,  
   Download, 
   Plus, 
   MoreHorizontal, 
-  ChevronDown,
   ArrowUpRight,
   ArrowDownRight
 } from "lucide-react";
@@ -16,6 +14,7 @@ import { fetchMySubjects, fetchSubjectStudents } from "../api/teacher";
 export default function StudentList() {
   const { t } = useTranslation();
   const [subjects, setSubjects] = useState([]);
+  const [subjectsLoading, setSubjectsLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,9 +22,13 @@ export default function StudentList() {
   const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
   const navigate = useNavigate();
 
-  // Simulating the fetch call you had
   useEffect(() => {
-    fetchMySubjects().then(setSubjects);
+    fetchMySubjects()
+      .then(setSubjects)
+      .catch((error) => {
+        console.error("Failed to fetch subjects:", error);
+      })
+      .finally(() => setSubjectsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -157,13 +160,13 @@ export default function StudentList() {
                 placeholder={t('students.search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-[color:var(--bg-secondary)] border-none rounded-lg text-sm focus:ring-2 focus:ring-[color:var(--primary)] outline-none"
+                className="w-full h-10 pl-10 pr-4 bg-[color:var(--bg-secondary)] border-none rounded-lg text-sm focus:ring-2 focus:ring-[color:var(--primary)] outline-none"
               />
             </div>
 
             {/* Filter Controls */}
             <div className="flex flex-wrap items-center gap-2">
-              <select
+              {/* <select
                 value={selectedSubject || ""}
                 onChange={(e) => setSelectedSubject(e.target.value)}
                 className="flex items-center gap-1 text-sm font-medium text-[color:var(--text-body)] px-3 py-1.5 hover:bg-[color:var(--bg-secondary)] rounded-lg cursor-pointer"
@@ -174,9 +177,29 @@ export default function StudentList() {
                     {s.name} ({s.code})
                   </option>
                 ))}
-              </select>
+              </select> */}
+            <div className="w-[220px] min-w-[220px] shrink-0">
+              <select value={selectedSubject || ""}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                disabled={subjectsLoading}
+                className="w-full h-9 text-sm font-medium text-[color:var(--text-body)] px-3 bg-[color:var(--bg-secondary)] rounded-lg cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 outline-none focus:ring-2 focus:ring-[color:var(--primary)]"
+                title={t("students.select_subject")}
+              >
+                {subjectsLoading ? (<option value="">{t("common.loading", "Loading...")}</option>
+              ) : ( 
+                <>
+                 <option value="">{t("students.select_subject")}</option> 
+                 {subjects.map((s) => (
+                   <option key={s._id} value={s._id}>
+                   {s.name} ({s.code})
+                 </option>
+                ))}
+                </>
+               )}
+             </select>
+            </div>
 
-              <button 
+              {/* <button 
                 onClick={handleSortToggle}
                 className="flex items-center gap-1 text-sm font-medium text-[color:var(--text-body)] px-3 py-1.5 hover:bg-[color:var(--bg-secondary)] rounded-lg cursor-pointer"
                 title="Sort by attendance"
@@ -187,9 +210,18 @@ export default function StudentList() {
                   size={14} 
                   className={`transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`} 
                 />
+              </button> */}
+              <button
+                onClick={handleSortToggle}
+                className="h-9 px-3 rounded-lg text-sm font-medium text-[color:var(--text-body)] hover:bg-[color:var(--bg-secondary)] flex items-center gap-2 cursor-pointer"
+                title={t("students.sort_by_attendance")}
+                type="button"
+              >
+                {sortOrder === "asc" ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
+                <span className="hidden md:inline">{t("students.sort_by_attendance")}</span>
               </button>
               
-              <div className="hidden sm:block h-6 w-px bg-[color:var(--border-color)] mx-1"></div>
+              <div className="hidden md:block h-6 w-px bg-[color:var(--border-color)] mx-1"></div>
 
               {["All", "High (> 90%)", "Medium (75-90%)", "Low (< 75%)"].map((filter) => {
                 const getLabel = () => {
@@ -210,17 +242,18 @@ export default function StudentList() {
 
                 return (
                   <button 
+                    type="button"
                     key={filter}
                     onClick={() => setSelectedFilter(filter)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                    className={`h-9 px-3 rounded-lg text-sm font-medium transition cursor-pointer ${
                       selectedFilter === filter 
                       ? "bg-[var(--primary)]/10 text-[var(--primary)]"
                       : "text-[var(--text-body)] hover:bg-[var(--bg-secondary)]"
                     }`}
                     title={getLabel()}
                   >
-                    <span className="hidden sm:inline">{getLabel()}</span>
-                    <span className="sm:hidden">{getShortLabel()}</span>
+                    <span className="hidden md:inline">{getLabel()}</span>
+                    <span className="md:hidden">{getShortLabel()}</span>
                   </button>
                 );
               })}
